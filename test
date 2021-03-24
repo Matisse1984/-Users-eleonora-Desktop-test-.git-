@@ -1,0 +1,38 @@
+import { Observable } from 'rxjs';
+
+export class NoteListComponent implements OnInit {
+  total$: Observable<number>;
+
+  ...
+
+  search(): void {
+    this.noteService.load(this.filter);
+    this.total$ = this.noteService.size$;
+  }
+
+  onChange(pageSize: number) {
+    this.filter.size = pageSize;
+    this.filter.page = 0;
+    this.search();
+  }
+
+  onPageChange(page: number) {
+    this.filter.page = page - 1;
+    this.search();
+    this.filter.page = page;
+  }
+
+  onSort({column, direction}: SortEvent) {
+    // reset other headers
+    this.headers.forEach(header => {
+      if (header.sortable !== column) {
+        header.direction = '';
+      }
+    });
+
+    this.filter.column = column;
+    this.filter.direction = direction;
+    this.filter.page = 0;
+    this.search();
+  }
+}
